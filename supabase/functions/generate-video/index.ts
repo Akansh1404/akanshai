@@ -9,23 +9,11 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, mode } = await req.json();
+    const { prompt } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompts: Record<string, string> = {
-      chat: "You are Akansh's AI assistant. You are helpful, witty, and knowledgeable. Respond in a friendly and concise manner. Format responses with markdown when helpful. You can generate images (/image), do deep research (/research), or generate video scenes (/video).",
-      research: `You are Akansh's Deep Research AI. When given a topic, provide an extremely thorough, well-structured research report. Include:
-- Executive summary
-- Key findings with details
-- Multiple perspectives and analysis
-- Data points and statistics when relevant
-- Conclusions and implications
-Format everything beautifully with markdown headers, bullet points, bold text, and tables where appropriate. Be comprehensive and cite reasoning.`,
-    };
-
-    const systemContent = systemPrompts[mode] || systemPrompts.chat;
-
+    // Generate a detailed scene description + representative image
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -33,38 +21,44 @@ Format everything beautifully with markdown headers, bullet points, bold text, a
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: mode === "research" ? "google/gemini-2.5-pro" : "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash-image",
         messages: [
-          { role: "system", content: systemContent },
-          ...messages,
+          {
+            role: "user",
+            content: `Create a cinematic, high-quality scene visualization for this video concept: "${prompt}". Generate a stunning key frame image that captures the essence of this scene as if it were a frame from a high-budget production.`
+          }
         ],
-        stream: true,
+        modalities: ["image", "text"],
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again shortly." }), {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Credits exhausted. Please top up." }), {
+        return new Response(JSON.stringify({ error: "Credits exhausted." }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI gateway error" }), {
+      console.error("Video gen error:", response.status, t);
+      return new Response(JSON.stringify({ error: "Video generation failed" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    const data = await response.json();
+    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    const text = data.choices?.[0]?.message?.content;
+
+    return new Response(JSON.stringify({ imageUrl, text, type: "video-concept" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.error("chat error:", e);
+    console.error("video gen error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
