@@ -3,6 +3,7 @@ export type Message = {
   role: "user" | "assistant";
   content: string;
   imageUrl?: string;
+  imageAttachment?: string; // base64 data URL of uploaded image
   videoUrl?: string;
   isLoading?: boolean;
   mode?: "chat" | "research" | "image" | "video";
