@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      shared_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string | null
+          message_content: string
+          mode: string | null
+          original_prompt: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          message_content: string
+          mode?: string | null
+          original_prompt?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          message_content?: string
+          mode?: string | null
+          original_prompt?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
