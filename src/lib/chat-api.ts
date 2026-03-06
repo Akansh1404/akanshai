@@ -10,7 +10,7 @@ export async function streamChat({
   onDelta,
   onDone,
 }: {
-  messages: { role: string; content: string }[];
+  messages: { role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }[];
   mode?: ChatMode;
   onDelta: (text: string) => void;
   onDone: () => void;

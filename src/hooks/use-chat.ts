@@ -57,9 +57,9 @@ export function useChat() {
     }
   }, [activeConvoId]);
 
-  const send = useCallback(async (input: string) => {
+  const send = useCallback(async (input: string, imageAttachment?: string) => {
     const trimmed = input.trim();
-    if (!trimmed || isLoading) return;
+    if ((!trimmed && !imageAttachment) || isLoading) return;
 
     // Detect mode from prefix
     let currentMode = mode;
@@ -75,7 +75,13 @@ export function useChat() {
       actualContent = trimmed.slice(7).trim();
     }
 
-    const userMsg: Message = { id: genId(), role: "user", content: trimmed, mode: currentMode };
+    const userMsg: Message = {
+      id: genId(),
+      role: "user",
+      content: trimmed,
+      mode: currentMode,
+      imageAttachment,
+    };
 
     // Create conversation if needed
     let convoId = activeConvoId;
@@ -123,7 +129,20 @@ export function useChat() {
     // Streaming text (chat or research)
     let assistantSoFar = "";
     const assistantId = genId();
-    const conversationHistory = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }));
+
+    // Build conversation history with image support
+    const conversationHistory = [...messages, userMsg].map(m => {
+      if (m.imageAttachment) {
+        return {
+          role: m.role,
+          content: [
+            { type: "text" as const, text: m.content || "What's in this image?" },
+            { type: "image_url" as const, image_url: { url: m.imageAttachment } },
+          ],
+        };
+      }
+      return { role: m.role, content: m.content };
+    });
 
     try {
       await streamChat({

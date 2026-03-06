@@ -1,10 +1,11 @@
-import { useState, FormEvent, useCallback } from "react";
-import { Send, ImagePlus, Mic, MicOff, Search, Video } from "lucide-react";
+import { useState, FormEvent, useCallback, useRef } from "react";
+import { Send, ImagePlus, Mic, MicOff, Search, Video, Camera, Paperclip, X } from "lucide-react";
 import { ChatMode } from "@/types/chat";
 import { useVoiceInput } from "@/hooks/use-voice-input";
+import { toast } from "sonner";
 
 interface ChatInputProps {
-  onSend: (message: string) => void;
+  onSend: (message: string, imageAttachment?: string) => void;
   isLoading: boolean;
   mode: ChatMode;
   onModeChange: (mode: ChatMode) => void;
@@ -17,8 +18,13 @@ const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: s
   video: { icon: Video, label: "Video", prefix: "/video ", color: "text-neon-purple" },
 };
 
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
+
 export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputProps) {
   const [input, setInput] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleVoiceResult = useCallback((text: string) => {
     const prefix = modeConfig[mode].prefix;
@@ -27,20 +33,34 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
 
   const { isListening, toggleListening, isSupported } = useVoiceInput(handleVoiceResult);
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (input.trim() && !isLoading) {
-      onSend(input);
-      setInput("");
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
     }
+    if (file.size > MAX_IMAGE_SIZE) {
+      toast.error("Image must be under 4MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const cycleMode = () => {
-    const modes: ChatMode[] = ["chat", "research", "image", "video"];
-    const idx = modes.indexOf(mode);
-    const next = modes[(idx + 1) % modes.length];
-    onModeChange(next);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleImageFile(file);
+    e.target.value = "";
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if ((!input.trim() && !imagePreview) || isLoading) return;
+    onSend(input || "What's in this image?", imagePreview || undefined);
     setInput("");
+    setImagePreview(null);
   };
 
   const currentConfig = modeConfig[mode];
@@ -80,7 +100,45 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
         })}
       </div>
 
+      {/* Image preview */}
+      {imagePreview && (
+        <div className="relative inline-block">
+          <img src={imagePreview} alt="Upload preview" className="h-20 rounded-lg border border-primary/30" />
+          <button
+            type="button"
+            onClick={() => setImagePreview(null)}
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex gap-2 items-end">
+        {/* Hidden file inputs */}
+        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+        <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+
+        {/* Upload button */}
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="flex-shrink-0 w-10 h-10 rounded-xl border bg-muted border-border text-muted-foreground hover:text-primary hover:border-primary/40 flex items-center justify-center transition-all duration-200"
+          title="Upload image"
+        >
+          <Paperclip className="w-4 h-4" />
+        </button>
+
+        {/* Camera button */}
+        <button
+          type="button"
+          onClick={() => cameraInputRef.current?.click()}
+          className="flex-shrink-0 w-10 h-10 rounded-xl border bg-muted border-border text-muted-foreground hover:text-primary hover:border-primary/40 flex items-center justify-center transition-all duration-200"
+          title="Take photo"
+        >
+          <Camera className="w-4 h-4" />
+        </button>
+
         {/* Voice button */}
         {isSupported && (
           <button
@@ -110,7 +168,7 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
 
         <button
           type="submit"
-          disabled={!input.trim() || isLoading}
+          disabled={(!input.trim() && !imagePreview) || isLoading}
           className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary hover:bg-primary/30 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed glow-cyan"
         >
           <Send className="w-4 h-4" />
