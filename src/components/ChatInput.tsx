@@ -19,6 +19,7 @@ const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: s
 };
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
+const MAX_INPUT_LENGTH = 4000;
 
 export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputProps) {
   const [input, setInput] = useState("");
@@ -159,9 +160,10 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
           <input
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value.slice(0, MAX_INPUT_LENGTH))}
             placeholder={placeholder}
             disabled={isLoading}
+            maxLength={MAX_INPUT_LENGTH}
             className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all duration-200 disabled:opacity-50 font-body"
           />
         </div>
@@ -174,6 +176,11 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
           <Send className="w-4 h-4" />
         </button>
       </form>
+      {input.length > MAX_INPUT_LENGTH * 0.8 && (
+        <p className="text-xs text-muted-foreground text-right font-body">
+          {input.length}/{MAX_INPUT_LENGTH}
+        </p>
+      )}
     </div>
   );
 }
