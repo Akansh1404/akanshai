@@ -130,8 +130,9 @@ export function useChat() {
     let assistantSoFar = "";
     const assistantId = genId();
 
-    // Build conversation history with image support
-    const conversationHistory = [...messages, userMsg].map(m => {
+    // Build conversation history with image support (cap at last 20 messages)
+    const recentMessages = [...messages, userMsg].slice(-20);
+    const conversationHistory = recentMessages.map(m => {
       if (m.imageAttachment) {
         return {
           role: m.role,
