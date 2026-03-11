@@ -3,7 +3,8 @@ import { useChat } from "@/hooks/use-chat";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatSidebar } from "@/components/ChatSidebar";
-import { Bot, Sparkles, Menu, X, ImagePlus, Search, Video, MessageSquare } from "lucide-react";
+import { VideoCallModal } from "@/components/VideoCallModal";
+import { Bot, Sparkles, Menu, X, ImagePlus, Search, Video, MessageSquare, PhoneCall } from "lucide-react";
 
 const Index = () => {
   const {
