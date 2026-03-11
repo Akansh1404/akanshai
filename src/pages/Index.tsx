@@ -3,7 +3,8 @@ import { useChat } from "@/hooks/use-chat";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatSidebar } from "@/components/ChatSidebar";
-import { Bot, Sparkles, Menu, X, ImagePlus, Search, Video, MessageSquare } from "lucide-react";
+import { VideoCallModal } from "@/components/VideoCallModal";
+import { Bot, Sparkles, Menu, X, ImagePlus, Search, Video, MessageSquare, PhoneCall } from "lucide-react";
 
 const Index = () => {
   const {
@@ -14,6 +15,7 @@ const Index = () => {
   } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [videoCallOpen, setVideoCallOpen] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -57,6 +59,13 @@ const Index = () => {
                   Chat • Research • Image • Video
                 </p>
               </div>
+              <button
+                onClick={() => setVideoCallOpen(true)}
+                className="w-10 h-10 rounded-xl bg-green-500/20 border border-green-500/40 flex items-center justify-center hover:bg-green-500/30 transition-all group/call"
+                title="Video Call with AI"
+              >
+                <PhoneCall className="w-5 h-5 text-green-400 group-hover/call:text-green-300" />
+              </button>
             </div>
           </div>
         </header>
@@ -110,6 +119,8 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      <VideoCallModal open={videoCallOpen} onClose={() => setVideoCallOpen(false)} />
     </div>
   );
 };
