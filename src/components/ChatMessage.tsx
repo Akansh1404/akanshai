@@ -184,16 +184,32 @@ export function ChatMessage({ message }: ChatMessageProps) {
           )}
         </div>
 
-        {/* Share button for assistant messages */}
+        {/* Action buttons for assistant messages */}
         {!isUser && !message.isLoading && (
-          <button
-            onClick={handleShare}
-            disabled={sharing}
-            className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 px-2 py-1 rounded-md bg-muted border border-border text-xs text-muted-foreground hover:text-primary"
-          >
-            {copied ? <Check className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
-            {copied ? "Copied!" : "Share"}
-          </button>
+          <div className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+            <button
+              onClick={handleSpeak}
+              disabled={isLoadingAudio}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted border border-border text-xs text-muted-foreground hover:text-primary"
+            >
+              {isLoadingAudio ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : isSpeaking ? (
+                <VolumeX className="w-3 h-3" />
+              ) : (
+                <Volume2 className="w-3 h-3" />
+              )}
+              {isLoadingAudio ? "Loading..." : isSpeaking ? "Stop" : "Listen"}
+            </button>
+            <button
+              onClick={handleShare}
+              disabled={sharing}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted border border-border text-xs text-muted-foreground hover:text-primary"
+            >
+              {copied ? <Check className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
+              {copied ? "Copied!" : "Share"}
+            </button>
+          </div>
         )}
       </div>
     </div>
