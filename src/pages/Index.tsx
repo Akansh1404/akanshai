@@ -15,6 +15,7 @@ const Index = () => {
   } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [videoCallOpen, setVideoCallOpen] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
