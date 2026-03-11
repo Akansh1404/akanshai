@@ -20,6 +20,68 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const ModeIcon = !isUser && message.mode ? modeIcons[message.mode] || Bot : isUser ? User : Bot;
   const [sharing, setSharing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleSpeak = async () => {
+    // If already playing, stop
+    if (isSpeaking && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsSpeaking(false);
+      return;
+    }
+
+    setIsLoadingAudio(true);
+    try {
+      // Strip markdown for cleaner speech
+      const plainText = message.content
+        .replace(/#{1,6}\s/g, "")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/`{1,3}[^`]*`{1,3}/g, "")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/[-*+]\s/g, "")
+        .replace(/\n{2,}/g, ". ")
+        .replace(/\n/g, " ")
+        .trim();
+
+      if (!plainText) return;
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/text-to-speech`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ text: plainText.slice(0, 5000) }),
+        }
+      );
+
+      if (!response.ok) throw new Error("TTS failed");
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      setIsSpeaking(true);
+      await audio.play();
+    } catch (e: any) {
+      toast.error("Voice playback failed");
+      setIsSpeaking(false);
+    } finally {
+      setIsLoadingAudio(false);
+    }
+  };
 
   const handleShare = async () => {
     if (sharing) return;
