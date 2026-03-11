@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import { Message } from "@/types/chat";
-import { Bot, User, Image, Search, Video, Share2, Check, Copy } from "lucide-react";
-import { useState } from "react";
+import { Bot, User, Image, Search, Video, Share2, Check, Copy, Volume2, VolumeX, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -20,6 +20,68 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const ModeIcon = !isUser && message.mode ? modeIcons[message.mode] || Bot : isUser ? User : Bot;
   const [sharing, setSharing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleSpeak = async () => {
+    // If already playing, stop
+    if (isSpeaking && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsSpeaking(false);
+      return;
+    }
+
+    setIsLoadingAudio(true);
+    try {
+      // Strip markdown for cleaner speech
+      const plainText = message.content
+        .replace(/#{1,6}\s/g, "")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/`{1,3}[^`]*`{1,3}/g, "")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/[-*+]\s/g, "")
+        .replace(/\n{2,}/g, ". ")
+        .replace(/\n/g, " ")
+        .trim();
+
+      if (!plainText) return;
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/text-to-speech`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ text: plainText.slice(0, 5000) }),
+        }
+      );
+
+      if (!response.ok) throw new Error("TTS failed");
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+
+      audio.onended = () => {
+        setIsSpeaking(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      setIsSpeaking(true);
+      await audio.play();
+    } catch (e: any) {
+      toast.error("Voice playback failed");
+      setIsSpeaking(false);
+    } finally {
+      setIsLoadingAudio(false);
+    }
+  };
 
   const handleShare = async () => {
     if (sharing) return;
@@ -122,16 +184,32 @@ export function ChatMessage({ message }: ChatMessageProps) {
           )}
         </div>
 
-        {/* Share button for assistant messages */}
+        {/* Action buttons for assistant messages */}
         {!isUser && !message.isLoading && (
-          <button
-            onClick={handleShare}
-            disabled={sharing}
-            className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 px-2 py-1 rounded-md bg-muted border border-border text-xs text-muted-foreground hover:text-primary"
-          >
-            {copied ? <Check className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
-            {copied ? "Copied!" : "Share"}
-          </button>
+          <div className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+            <button
+              onClick={handleSpeak}
+              disabled={isLoadingAudio}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted border border-border text-xs text-muted-foreground hover:text-primary"
+            >
+              {isLoadingAudio ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : isSpeaking ? (
+                <VolumeX className="w-3 h-3" />
+              ) : (
+                <Volume2 className="w-3 h-3" />
+              )}
+              {isLoadingAudio ? "Loading..." : isSpeaking ? "Stop" : "Listen"}
+            </button>
+            <button
+              onClick={handleShare}
+              disabled={sharing}
+              className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted border border-border text-xs text-muted-foreground hover:text-primary"
+            >
+              {copied ? <Check className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
+              {copied ? "Copied!" : "Share"}
+            </button>
+          </div>
         )}
       </div>
     </div>
