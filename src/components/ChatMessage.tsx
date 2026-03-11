@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import { Message } from "@/types/chat";
-import { Bot, User, Image, Search, Video, Share2, Check, Copy } from "lucide-react";
-import { useState } from "react";
+import { Bot, User, Image, Search, Video, Share2, Check, Copy, Volume2, VolumeX, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
