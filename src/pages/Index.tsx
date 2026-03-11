@@ -119,6 +119,8 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      <VideoCallModal open={videoCallOpen} onClose={() => setVideoCallOpen(false)} />
     </div>
   );
 };
