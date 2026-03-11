@@ -59,8 +59,14 @@ const Index = () => {
                   Chat • Research • Image • Video
                 </p>
               </div>
+              <button
+                onClick={() => setVideoCallOpen(true)}
+                className="w-10 h-10 rounded-xl bg-green-500/20 border border-green-500/40 flex items-center justify-center hover:bg-green-500/30 transition-all group/call"
+                title="Video Call with AI"
+              >
+                <PhoneCall className="w-5 h-5 text-green-400 group-hover/call:text-green-300" />
+              </button>
             </div>
-          </div>
         </header>
 
         {/* Messages */}
