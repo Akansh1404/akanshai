@@ -67,6 +67,7 @@ const Index = () => {
                 <PhoneCall className="w-5 h-5 text-green-400 group-hover/call:text-green-300" />
               </button>
             </div>
+          </div>
         </header>
 
         {/* Messages */}
