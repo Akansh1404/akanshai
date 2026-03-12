@@ -11,11 +11,16 @@ interface ChatInputProps {
   onModeChange: (mode: ChatMode) => void;
 }
 
-const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string }> = {
-  chat: { icon: Send, label: "Chat", prefix: "", color: "text-primary" },
-  research: { icon: Search, label: "Research", prefix: "/research ", color: "text-neon-green" },
-  image: { icon: ImagePlus, label: "Image", prefix: "/image ", color: "text-secondary" },
-  video: { icon: Video, label: "Video", prefix: "/video ", color: "text-neon-purple" },
+const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string; group: "core" | "edu" }> = {
+  chat: { icon: Send, label: "Chat", prefix: "", color: "text-primary", group: "core" },
+  research: { icon: Search, label: "Research", prefix: "/research ", color: "text-neon-green", group: "core" },
+  image: { icon: ImagePlus, label: "Image", prefix: "/image ", color: "text-secondary", group: "core" },
+  video: { icon: Video, label: "Video", prefix: "/video ", color: "text-neon-purple", group: "core" },
+  math: { icon: Calculator, label: "Math", prefix: "/math ", color: "text-primary", group: "edu" },
+  grammar: { icon: SpellCheck, label: "Grammar", prefix: "/grammar ", color: "text-neon-green", group: "edu" },
+  quiz: { icon: HelpCircle, label: "Quiz", prefix: "/quiz ", color: "text-secondary", group: "edu" },
+  flashcards: { icon: Layers, label: "Cards", prefix: "/flashcards ", color: "text-neon-purple", group: "edu" },
+  homework: { icon: BookOpen, label: "HW Help", prefix: "/homework ", color: "text-primary", group: "edu" },
 };
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
