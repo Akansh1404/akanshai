@@ -16,11 +16,16 @@ export function VideoCallModal({ open, onClose }: { open: boolean; onClose: () =
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<any>(null);
   const conversationRef = useRef<{ role: string; content: string }[]>([]);
+  const handleUserSpeechRef = useRef<(text: string) => void>(() => {});
+  const callActiveRef = useRef(false);
 
-  // Setup speech recognition
+  // Setup speech recognition once
   useEffect(() => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) return;
+    if (!SR) {
+      console.warn("SpeechRecognition not supported in this browser");
+      return;
+    }
     const recognition = new SR();
     recognition.continuous = true;
     recognition.interimResults = true;
@@ -39,24 +44,27 @@ export function VideoCallModal({ open, onClose }: { open: boolean; onClose: () =
       if (interim) setTranscript(interim);
       if (final) {
         setTranscript(final);
-        handleUserSpeech(final.trim());
+        handleUserSpeechRef.current(final.trim());
       }
     };
-    recognition.onerror = () => setIsListening(false);
+    recognition.onerror = (e: any) => {
+      console.error("SpeechRecognition error:", e.error);
+      setIsListening(false);
+    };
     recognition.onend = () => {
-      // Auto-restart if call is still active
-      if (callActive) {
+      if (callActiveRef.current) {
         try { recognition.start(); } catch {}
       }
     };
     recognitionRef.current = recognition;
     return () => { try { recognition.abort(); } catch {} };
-  }, [callActive]);
+  }, []);
 
   const handleUserSpeech = useCallback(async (text: string) => {
     if (!text || isProcessing) return;
     setIsProcessing(true);
     setTranscript("");
+    console.log("User said:", text);
 
     conversationRef.current.push({ role: "user", content: text });
 
@@ -149,8 +157,14 @@ export function VideoCallModal({ open, onClose }: { open: boolean; onClose: () =
     }
   }, [isProcessing]);
 
+  // Keep ref in sync
+  useEffect(() => {
+    handleUserSpeechRef.current = handleUserSpeech;
+  }, [handleUserSpeech]);
+
   const startCall = useCallback(() => {
     setCallActive(true);
+    callActiveRef.current = true;
     setAiText("Listening...");
     conversationRef.current = [
       { role: "system", content: "You are Akansh's AI assistant on a voice call. Keep responses short and conversational, like a real phone call. Max 2-3 sentences." },
@@ -158,11 +172,14 @@ export function VideoCallModal({ open, onClose }: { open: boolean; onClose: () =
     try {
       recognitionRef.current?.start();
       setIsListening(true);
-    } catch {}
+    } catch (e) {
+      console.error("Failed to start recognition:", e);
+    }
   }, []);
 
   const endCall = useCallback(() => {
     setCallActive(false);
+    callActiveRef.current = false;
     setIsListening(false);
     setIsSpeaking(false);
     setIsProcessing(false);
