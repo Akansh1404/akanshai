@@ -65,15 +65,22 @@ export function useChat() {
     // Detect mode from prefix
     let currentMode = mode;
     let actualContent = trimmed;
-    if (trimmed.toLowerCase().startsWith("/image ")) {
-      currentMode = "image";
-      actualContent = trimmed.slice(7).trim();
-    } else if (trimmed.toLowerCase().startsWith("/research ")) {
-      currentMode = "research";
-      actualContent = trimmed.slice(10).trim();
-    } else if (trimmed.toLowerCase().startsWith("/video ")) {
-      currentMode = "video";
-      actualContent = trimmed.slice(7).trim();
+    const prefixMap: [string, ChatMode][] = [
+      ["/image ", "image"],
+      ["/research ", "research"],
+      ["/video ", "video"],
+      ["/math ", "math"],
+      ["/grammar ", "grammar"],
+      ["/quiz ", "quiz"],
+      ["/flashcards ", "flashcards"],
+      ["/homework ", "homework"],
+    ];
+    for (const [prefix, m] of prefixMap) {
+      if (trimmed.toLowerCase().startsWith(prefix)) {
+        currentMode = m;
+        actualContent = trimmed.slice(prefix.length).trim();
+        break;
+      }
     }
 
     const userMsg: Message = {

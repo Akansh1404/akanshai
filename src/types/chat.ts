@@ -6,10 +6,10 @@ export type Message = {
   imageAttachment?: string; // base64 data URL of uploaded image
   videoUrl?: string;
   isLoading?: boolean;
-  mode?: "chat" | "research" | "image" | "video";
+  mode?: ChatMode;
 };
 
-export type ChatMode = "chat" | "research" | "image" | "video";
+export type ChatMode = "chat" | "research" | "image" | "video" | "math" | "grammar" | "quiz" | "flashcards" | "homework";
 
 export type AppLanguage =
   | "english" | "hindi" | "bengali" | "telugu" | "marathi" | "tamil"

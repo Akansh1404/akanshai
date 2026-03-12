@@ -1,5 +1,5 @@
 import { useState, FormEvent, useCallback, useRef } from "react";
-import { Send, ImagePlus, Mic, MicOff, Search, Video, Camera, Paperclip, X } from "lucide-react";
+import { Send, ImagePlus, Mic, MicOff, Search, Video, Camera, Paperclip, X, Calculator, SpellCheck, HelpCircle, Layers, BookOpen } from "lucide-react";
 import { ChatMode } from "@/types/chat";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { toast } from "sonner";
@@ -11,11 +11,16 @@ interface ChatInputProps {
   onModeChange: (mode: ChatMode) => void;
 }
 
-const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string }> = {
-  chat: { icon: Send, label: "Chat", prefix: "", color: "text-primary" },
-  research: { icon: Search, label: "Research", prefix: "/research ", color: "text-neon-green" },
-  image: { icon: ImagePlus, label: "Image", prefix: "/image ", color: "text-secondary" },
-  video: { icon: Video, label: "Video", prefix: "/video ", color: "text-neon-purple" },
+const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string; group: "core" | "edu" }> = {
+  chat: { icon: Send, label: "Chat", prefix: "", color: "text-primary", group: "core" },
+  research: { icon: Search, label: "Research", prefix: "/research ", color: "text-neon-green", group: "core" },
+  image: { icon: ImagePlus, label: "Image", prefix: "/image ", color: "text-secondary", group: "core" },
+  video: { icon: Video, label: "Video", prefix: "/video ", color: "text-neon-purple", group: "core" },
+  math: { icon: Calculator, label: "Math", prefix: "/math ", color: "text-primary", group: "edu" },
+  grammar: { icon: SpellCheck, label: "Grammar", prefix: "/grammar ", color: "text-neon-green", group: "edu" },
+  quiz: { icon: HelpCircle, label: "Quiz", prefix: "/quiz ", color: "text-secondary", group: "edu" },
+  flashcards: { icon: Layers, label: "Cards", prefix: "/flashcards ", color: "text-neon-purple", group: "edu" },
+  homework: { icon: BookOpen, label: "HW Help", prefix: "/homework ", color: "text-primary", group: "edu" },
 };
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
@@ -64,22 +69,24 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
     setImagePreview(null);
   };
 
-  const currentConfig = modeConfig[mode];
-  const placeholder = isLoading
-    ? "Generating..."
-    : mode === "chat"
-    ? "Type a message..."
-    : mode === "research"
-    ? "Enter a topic to research deeply..."
-    : mode === "image"
-    ? "Describe the image you want..."
-    : "Describe the video scene...";
+  const placeholders: Partial<Record<ChatMode, string>> = {
+    chat: "Type a message...",
+    research: "Enter a topic to research deeply...",
+    image: "Describe the image you want...",
+    video: "Describe the video scene...",
+    math: "Enter a math problem to solve...",
+    grammar: "Paste text to check grammar...",
+    quiz: "Enter a topic to generate a quiz...",
+    flashcards: "Enter a topic for flashcards...",
+    homework: "Describe your homework question...",
+  };
+  const placeholder = isLoading ? "Generating..." : placeholders[mode] || "Type a message...";
 
   return (
     <div className="space-y-2">
       {/* Mode selector */}
-      <div className="flex gap-1">
-        {(Object.keys(modeConfig) as ChatMode[]).map((m) => {
+      <div className="flex gap-1 flex-wrap">
+        {(Object.keys(modeConfig) as ChatMode[]).filter(m => modeConfig[m].group === "core").map((m) => {
           const cfg = modeConfig[m];
           const Icon = cfg.icon;
           const isActive = mode === m;
@@ -89,6 +96,27 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
               type="button"
               onClick={() => { onModeChange(m); setInput(""); }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body font-semibold tracking-wide transition-all duration-200 ${
+                isActive
+                  ? `bg-muted border border-primary/30 ${cfg.color}`
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="w-3 h-3" />
+              {cfg.label}
+            </button>
+          );
+        })}
+        <span className="text-muted-foreground/40 self-center text-xs">|</span>
+        {(Object.keys(modeConfig) as ChatMode[]).filter(m => modeConfig[m].group === "edu").map((m) => {
+          const cfg = modeConfig[m];
+          const Icon = cfg.icon;
+          const isActive = mode === m;
+          return (
+            <button
+              key={m}
+              type="button"
+              onClick={() => { onModeChange(m); setInput(""); }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-body font-semibold tracking-wide transition-all duration-200 ${
                 isActive
                   ? `bg-muted border border-primary/30 ${cfg.color}`
                   : "text-muted-foreground hover:text-foreground"
