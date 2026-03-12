@@ -11,6 +11,7 @@ const Index = () => {
   const {
     messages, isLoading, send, clearChat,
     mode, setMode,
+    language, setLanguage,
     conversations, loadConversation, startNewChat, deleteConvo,
     activeConvoId,
   } = useChat();
