@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Message, ChatMode, Conversation } from "@/types/chat";
+import { Message, ChatMode, Conversation, AppLanguage } from "@/types/chat";
 import { streamChat, generateImage, generateVideo } from "@/lib/chat-api";
 import { loadConversations, saveConversations } from "@/lib/chat-storage";
 import { toast } from "sonner";
