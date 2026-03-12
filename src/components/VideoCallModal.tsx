@@ -64,6 +64,7 @@ export function VideoCallModal({ open, onClose }: { open: boolean; onClose: () =
     if (!text || isProcessing) return;
     setIsProcessing(true);
     setTranscript("");
+    console.log("User said:", text);
 
     conversationRef.current.push({ role: "user", content: text });
 
