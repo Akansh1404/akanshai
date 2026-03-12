@@ -69,16 +69,18 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
     setImagePreview(null);
   };
 
-  const currentConfig = modeConfig[mode];
-  const placeholder = isLoading
-    ? "Generating..."
-    : mode === "chat"
-    ? "Type a message..."
-    : mode === "research"
-    ? "Enter a topic to research deeply..."
-    : mode === "image"
-    ? "Describe the image you want..."
-    : "Describe the video scene...";
+  const placeholders: Partial<Record<ChatMode, string>> = {
+    chat: "Type a message...",
+    research: "Enter a topic to research deeply...",
+    image: "Describe the image you want...",
+    video: "Describe the video scene...",
+    math: "Enter a math problem to solve...",
+    grammar: "Paste text to check grammar...",
+    quiz: "Enter a topic to generate a quiz...",
+    flashcards: "Enter a topic for flashcards...",
+    homework: "Describe your homework question...",
+  };
+  const placeholder = isLoading ? "Generating..." : placeholders[mode] || "Type a message...";
 
   return (
     <div className="space-y-2">
