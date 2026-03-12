@@ -177,6 +177,7 @@ export function useChat() {
   return {
     messages, isLoading, send, clearChat,
     mode, setMode,
+    language, setLanguage,
     conversations, loadConversation, startNewChat, deleteConvo,
     activeConvoId,
   };
