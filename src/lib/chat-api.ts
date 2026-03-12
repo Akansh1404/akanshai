@@ -7,11 +7,13 @@ const VIDEO_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-vi
 export async function streamChat({
   messages,
   mode = "chat",
+  language = "english",
   onDelta,
   onDone,
 }: {
   messages: { role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }[];
   mode?: ChatMode;
+  language?: AppLanguage;
   onDelta: (text: string) => void;
   onDone: () => void;
 }) {
