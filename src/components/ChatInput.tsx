@@ -1,5 +1,5 @@
 import { useState, FormEvent, useCallback, useRef } from "react";
-import { Send, ImagePlus, Mic, MicOff, Search, Video, Camera, Paperclip, X } from "lucide-react";
+import { Send, ImagePlus, Mic, MicOff, Search, Video, Camera, Paperclip, X, Calculator, SpellCheck, HelpCircle, Layers, BookOpen } from "lucide-react";
 import { ChatMode } from "@/types/chat";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { toast } from "sonner";
