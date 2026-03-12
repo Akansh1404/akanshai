@@ -137,7 +137,11 @@ serve(async (req) => {
 Format everything beautifully with markdown headers, bullet points, bold text, and tables where appropriate. Be comprehensive and cite reasoning.`,
     };
 
-    const systemContent = (systemPrompts[safeMode] || systemPrompts.chat) + SAFETY_ADDENDUM;
+    const langInstruction = safeLang !== "english"
+      ? `\n\nIMPORTANT: The user has selected "${safeLang}" as their language. You MUST respond entirely in ${safeLang}. Use the native script of the language (e.g. Devanagari for Hindi, Bengali script for Bengali, etc.). Only use English for technical terms, code, or proper nouns when necessary.`
+      : "";
+
+    const systemContent = (systemPrompts[safeMode] || systemPrompts.chat) + SAFETY_ADDENDUM + langInstruction;
 
     // Sanitize user messages
     const sanitized = sanitizeMessages(messages);
