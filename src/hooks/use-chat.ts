@@ -150,6 +150,7 @@ export function useChat() {
       await streamChat({
         messages: conversationHistory,
         mode: currentMode,
+        language,
         onDelta: (chunk) => {
           assistantSoFar += chunk;
           setMessages(prev => {
