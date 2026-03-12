@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { useChat } from "@/hooks/use-chat";
 import { ChatMessage } from "@/components/ChatMessage";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatSidebar } from "@/components/ChatSidebar";
 import { VideoCallModal } from "@/components/VideoCallModal";
