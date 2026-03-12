@@ -107,11 +107,12 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, mode } = body;
+    const { messages, mode, language } = body;
 
     // Validate mode
     const validModes = new Set(["chat", "research"]);
     const safeMode = validModes.has(mode) ? mode : "chat";
+    const safeLang = typeof language === "string" && language.length < 30 ? language : "english";
 
     // Validate messages
     const validationError = validateMessages(messages);
