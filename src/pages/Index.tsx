@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { useChat } from "@/hooks/use-chat";
 import { ChatMessage } from "@/components/ChatMessage";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatSidebar } from "@/components/ChatSidebar";
 import { VideoCallModal } from "@/components/VideoCallModal";
@@ -10,6 +11,7 @@ const Index = () => {
   const {
     messages, isLoading, send, clearChat,
     mode, setMode,
+    language, setLanguage,
     conversations, loadConversation, startNewChat, deleteConvo,
     activeConvoId,
   } = useChat();
@@ -59,6 +61,7 @@ const Index = () => {
                   Chat • Research • Image • Video
                 </p>
               </div>
+              <LanguageSelector language={language} onChange={setLanguage} />
               <button
                 onClick={() => setVideoCallOpen(true)}
                 className="w-10 h-10 rounded-xl bg-green-500/20 border border-green-500/40 flex items-center justify-center hover:bg-green-500/30 transition-all group/call"

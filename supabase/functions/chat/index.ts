@@ -107,11 +107,12 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, mode } = body;
+    const { messages, mode, language } = body;
 
     // Validate mode
     const validModes = new Set(["chat", "research"]);
     const safeMode = validModes.has(mode) ? mode : "chat";
+    const safeLang = typeof language === "string" && language.length < 30 ? language : "english";
 
     // Validate messages
     const validationError = validateMessages(messages);
@@ -136,7 +137,11 @@ serve(async (req) => {
 Format everything beautifully with markdown headers, bullet points, bold text, and tables where appropriate. Be comprehensive and cite reasoning.`,
     };
 
-    const systemContent = (systemPrompts[safeMode] || systemPrompts.chat) + SAFETY_ADDENDUM;
+    const langInstruction = safeLang !== "english"
+      ? `\n\nIMPORTANT: The user has selected "${safeLang}" as their language. You MUST respond entirely in ${safeLang}. Use the native script of the language (e.g. Devanagari for Hindi, Bengali script for Bengali, etc.). Only use English for technical terms, code, or proper nouns when necessary.`
+      : "";
+
+    const systemContent = (systemPrompts[safeMode] || systemPrompts.chat) + SAFETY_ADDENDUM + langInstruction;
 
     // Sanitize user messages
     const sanitized = sanitizeMessages(messages);

@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Message, ChatMode, Conversation } from "@/types/chat";
+import { Message, ChatMode, Conversation, AppLanguage } from "@/types/chat";
 import { streamChat, generateImage, generateVideo } from "@/lib/chat-api";
 import { loadConversations, saveConversations } from "@/lib/chat-storage";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<ChatMode>("chat");
+  const [language, setLanguage] = useState<AppLanguage>("english");
   const idCounter = useRef(0);
 
   const genId = () => `msg-${++idCounter.current}-${Date.now()}`;
@@ -149,6 +150,7 @@ export function useChat() {
       await streamChat({
         messages: conversationHistory,
         mode: currentMode,
+        language,
         onDelta: (chunk) => {
           assistantSoFar += chunk;
           setMessages(prev => {
@@ -165,7 +167,7 @@ export function useChat() {
       toast.error(e.message || "Chat failed");
       setIsLoading(false);
     }
-  }, [messages, isLoading, mode, activeConvoId]);
+  }, [messages, isLoading, mode, language, activeConvoId]);
 
   const clearChat = useCallback(() => {
     setMessages([]);
@@ -175,6 +177,7 @@ export function useChat() {
   return {
     messages, isLoading, send, clearChat,
     mode, setMode,
+    language, setLanguage,
     conversations, loadConversation, startNewChat, deleteConvo,
     activeConvoId,
   };
