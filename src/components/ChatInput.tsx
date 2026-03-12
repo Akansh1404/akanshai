@@ -85,8 +85,8 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
   return (
     <div className="space-y-2">
       {/* Mode selector */}
-      <div className="flex gap-1">
-        {(Object.keys(modeConfig) as ChatMode[]).map((m) => {
+      <div className="flex gap-1 flex-wrap">
+        {(Object.keys(modeConfig) as ChatMode[]).filter(m => modeConfig[m].group === "core").map((m) => {
           const cfg = modeConfig[m];
           const Icon = cfg.icon;
           const isActive = mode === m;
@@ -96,6 +96,27 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
               type="button"
               onClick={() => { onModeChange(m); setInput(""); }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-body font-semibold tracking-wide transition-all duration-200 ${
+                isActive
+                  ? `bg-muted border border-primary/30 ${cfg.color}`
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="w-3 h-3" />
+              {cfg.label}
+            </button>
+          );
+        })}
+        <span className="text-muted-foreground/40 self-center text-xs">|</span>
+        {(Object.keys(modeConfig) as ChatMode[]).filter(m => modeConfig[m].group === "edu").map((m) => {
+          const cfg = modeConfig[m];
+          const Icon = cfg.icon;
+          const isActive = mode === m;
+          return (
+            <button
+              key={m}
+              type="button"
+              onClick={() => { onModeChange(m); setInput(""); }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-body font-semibold tracking-wide transition-all duration-200 ${
                 isActive
                   ? `bg-muted border border-primary/30 ${cfg.color}`
                   : "text-muted-foreground hover:text-foreground"
