@@ -157,8 +157,14 @@ export function VideoCallModal({ open, onClose }: { open: boolean; onClose: () =
     }
   }, [isProcessing]);
 
+  // Keep ref in sync
+  useEffect(() => {
+    handleUserSpeechRef.current = handleUserSpeech;
+  }, [handleUserSpeech]);
+
   const startCall = useCallback(() => {
     setCallActive(true);
+    callActiveRef.current = true;
     setAiText("Listening...");
     conversationRef.current = [
       { role: "system", content: "You are Akansh's AI assistant on a voice call. Keep responses short and conversational, like a real phone call. Max 2-3 sentences." },
@@ -166,11 +172,14 @@ export function VideoCallModal({ open, onClose }: { open: boolean; onClose: () =
     try {
       recognitionRef.current?.start();
       setIsListening(true);
-    } catch {}
+    } catch (e) {
+      console.error("Failed to start recognition:", e);
+    }
   }, []);
 
   const endCall = useCallback(() => {
     setCallActive(false);
+    callActiveRef.current = false;
     setIsListening(false);
     setIsSpeaking(false);
     setIsProcessing(false);
