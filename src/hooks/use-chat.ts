@@ -182,7 +182,7 @@ export function useChat() {
       toast.error(e.message || "Chat failed");
       setIsLoading(false);
     }
-  }, [messages, isLoading, mode, language, activeConvoId]);
+  }, [messages, isLoading, mode, language, personality, activeConvoId]);
 
   const clearChat = useCallback(() => {
     setMessages([]);
