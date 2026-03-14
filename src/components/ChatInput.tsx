@@ -11,7 +11,7 @@ interface ChatInputProps {
   onModeChange: (mode: ChatMode) => void;
 }
 
-const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string; group: "core" | "edu" }> = {
+const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string; group: "core" | "edu" | "fun" }> = {
   chat: { icon: Send, label: "Chat", prefix: "", color: "text-primary", group: "core" },
   research: { icon: Search, label: "Research", prefix: "/research ", color: "text-neon-green", group: "core" },
   image: { icon: ImagePlus, label: "Image", prefix: "/image ", color: "text-secondary", group: "core" },
