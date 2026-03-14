@@ -21,6 +21,10 @@ const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: s
   quiz: { icon: HelpCircle, label: "Quiz", prefix: "/quiz ", color: "text-secondary", group: "edu" },
   flashcards: { icon: Layers, label: "Cards", prefix: "/flashcards ", color: "text-neon-purple", group: "edu" },
   homework: { icon: BookOpen, label: "HW Help", prefix: "/homework ", color: "text-primary", group: "edu" },
+  jokes: { icon: Laugh, label: "Jokes", prefix: "/jokes ", color: "text-secondary", group: "fun" },
+  facts: { icon: Lightbulb, label: "Facts", prefix: "/facts ", color: "text-neon-green", group: "fun" },
+  story: { icon: BookText, label: "Story", prefix: "/story ", color: "text-primary", group: "fun" },
+  wouldyourather: { icon: Shuffle, label: "WYR", prefix: "/wyr ", color: "text-neon-purple", group: "fun" },
 };
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
