@@ -83,6 +83,10 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
     quiz: "Enter a topic to generate a quiz...",
     flashcards: "Enter a topic for flashcards...",
     homework: "Describe your homework question...",
+    jokes: "Enter a topic for jokes...",
+    facts: "Enter a topic for random facts...",
+    story: "Describe a story idea or genre...",
+    wouldyourather: "Enter a topic for Would You Rather...",
   };
   const placeholder = isLoading ? "Generating..." : placeholders[mode] || "Type a message...";
 
