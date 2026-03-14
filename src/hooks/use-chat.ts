@@ -11,6 +11,7 @@ export function useChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<ChatMode>("chat");
   const [language, setLanguage] = useState<AppLanguage>("english");
+  const [personality, setPersonality] = useState<Personality>("default");
   const idCounter = useRef(0);
 
   const genId = () => `msg-${++idCounter.current}-${Date.now()}`;
