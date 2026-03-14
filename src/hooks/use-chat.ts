@@ -165,6 +165,7 @@ export function useChat() {
         messages: conversationHistory,
         mode: currentMode,
         language,
+        personality,
         onDelta: (chunk) => {
           assistantSoFar += chunk;
           setMessages(prev => {
