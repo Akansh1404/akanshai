@@ -1,4 +1,4 @@
-import { ChatMode, AppLanguage } from "@/types/chat";
+import { ChatMode, AppLanguage, Personality } from "@/types/chat";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
