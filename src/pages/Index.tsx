@@ -63,6 +63,7 @@ const Index = () => {
                   Chat • Research • Image • Video
                 </p>
               </div>
+              <PersonalitySelector personality={personality} onChange={setPersonality} />
               <LanguageSelector language={language} onChange={setLanguage} />
               <button
                 onClick={() => setVideoCallOpen(true)}
