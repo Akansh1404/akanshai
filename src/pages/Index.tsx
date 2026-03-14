@@ -3,6 +3,7 @@ import { useChat } from "@/hooks/use-chat";
 import { ChatMessage } from "@/components/ChatMessage";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ChatInput } from "@/components/ChatInput";
+import { PersonalitySelector } from "@/components/PersonalitySelector";
 import { ChatSidebar } from "@/components/ChatSidebar";
 import { VideoCallModal } from "@/components/VideoCallModal";
 import { Bot, Sparkles, Menu, X, ImagePlus, Search, Video, MessageSquare, PhoneCall } from "lucide-react";
@@ -12,6 +13,7 @@ const Index = () => {
     messages, isLoading, send, clearChat,
     mode, setMode,
     language, setLanguage,
+    personality, setPersonality,
     conversations, loadConversation, startNewChat, deleteConvo,
     activeConvoId,
   } = useChat();
@@ -61,6 +63,7 @@ const Index = () => {
                   Chat • Research • Image • Video
                 </p>
               </div>
+              <PersonalitySelector personality={personality} onChange={setPersonality} />
               <LanguageSelector language={language} onChange={setLanguage} />
               <button
                 onClick={() => setVideoCallOpen(true)}

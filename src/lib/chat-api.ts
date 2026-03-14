@@ -1,4 +1,4 @@
-import { ChatMode, AppLanguage } from "@/types/chat";
+import { ChatMode, AppLanguage, Personality } from "@/types/chat";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
@@ -8,12 +8,14 @@ export async function streamChat({
   messages,
   mode = "chat",
   language = "english",
+  personality = "default",
   onDelta,
   onDone,
 }: {
   messages: { role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }[];
   mode?: ChatMode;
   language?: AppLanguage;
+  personality?: Personality;
   onDelta: (text: string) => void;
   onDone: () => void;
 }) {
@@ -23,7 +25,7 @@ export async function streamChat({
       "Content-Type": "application/json",
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages, mode, language }),
+    body: JSON.stringify({ messages, mode, language, personality }),
   });
 
   if (!resp.ok || !resp.body) {

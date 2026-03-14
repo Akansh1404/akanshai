@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Message, ChatMode, Conversation, AppLanguage } from "@/types/chat";
+import { Message, ChatMode, Conversation, AppLanguage, Personality } from "@/types/chat";
 import { streamChat, generateImage, generateVideo } from "@/lib/chat-api";
 import { loadConversations, saveConversations } from "@/lib/chat-storage";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ export function useChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<ChatMode>("chat");
   const [language, setLanguage] = useState<AppLanguage>("english");
+  const [personality, setPersonality] = useState<Personality>("default");
   const idCounter = useRef(0);
 
   const genId = () => `msg-${++idCounter.current}-${Date.now()}`;
@@ -164,6 +165,7 @@ export function useChat() {
         messages: conversationHistory,
         mode: currentMode,
         language,
+        personality,
         onDelta: (chunk) => {
           assistantSoFar += chunk;
           setMessages(prev => {
@@ -180,7 +182,7 @@ export function useChat() {
       toast.error(e.message || "Chat failed");
       setIsLoading(false);
     }
-  }, [messages, isLoading, mode, language, activeConvoId]);
+  }, [messages, isLoading, mode, language, personality, activeConvoId]);
 
   const clearChat = useCallback(() => {
     setMessages([]);
@@ -191,6 +193,7 @@ export function useChat() {
     messages, isLoading, send, clearChat,
     mode, setMode,
     language, setLanguage,
+    personality, setPersonality,
     conversations, loadConversation, startNewChat, deleteConvo,
     activeConvoId,
   };
