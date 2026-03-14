@@ -1,5 +1,5 @@
 import { useState, FormEvent, useCallback, useRef } from "react";
-import { Send, ImagePlus, Mic, MicOff, Search, Video, Camera, Paperclip, X, Calculator, SpellCheck, HelpCircle, Layers, BookOpen } from "lucide-react";
+import { Send, ImagePlus, Mic, MicOff, Search, Video, Camera, Paperclip, X, Calculator, SpellCheck, HelpCircle, Layers, BookOpen, Laugh, Lightbulb, BookText, Shuffle } from "lucide-react";
 import { ChatMode } from "@/types/chat";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { toast } from "sonner";
@@ -11,7 +11,7 @@ interface ChatInputProps {
   onModeChange: (mode: ChatMode) => void;
 }
 
-const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string; group: "core" | "edu" }> = {
+const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: string; color: string; group: "core" | "edu" | "fun" }> = {
   chat: { icon: Send, label: "Chat", prefix: "", color: "text-primary", group: "core" },
   research: { icon: Search, label: "Research", prefix: "/research ", color: "text-neon-green", group: "core" },
   image: { icon: ImagePlus, label: "Image", prefix: "/image ", color: "text-secondary", group: "core" },
@@ -21,6 +21,10 @@ const modeConfig: Record<ChatMode, { icon: typeof Send; label: string; prefix: s
   quiz: { icon: HelpCircle, label: "Quiz", prefix: "/quiz ", color: "text-secondary", group: "edu" },
   flashcards: { icon: Layers, label: "Cards", prefix: "/flashcards ", color: "text-neon-purple", group: "edu" },
   homework: { icon: BookOpen, label: "HW Help", prefix: "/homework ", color: "text-primary", group: "edu" },
+  jokes: { icon: Laugh, label: "Jokes", prefix: "/jokes ", color: "text-secondary", group: "fun" },
+  facts: { icon: Lightbulb, label: "Facts", prefix: "/facts ", color: "text-neon-green", group: "fun" },
+  story: { icon: BookText, label: "Story", prefix: "/story ", color: "text-primary", group: "fun" },
+  wouldyourather: { icon: Shuffle, label: "WYR", prefix: "/wyr ", color: "text-neon-purple", group: "fun" },
 };
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
@@ -79,6 +83,10 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
     quiz: "Enter a topic to generate a quiz...",
     flashcards: "Enter a topic for flashcards...",
     homework: "Describe your homework question...",
+    jokes: "Enter a topic for jokes...",
+    facts: "Enter a topic for random facts...",
+    story: "Describe a story idea or genre...",
+    wouldyourather: "Enter a topic for Would You Rather...",
   };
   const placeholder = isLoading ? "Generating..." : placeholders[mode] || "Type a message...";
 
@@ -108,6 +116,27 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange }: ChatInputPr
         })}
         <span className="text-muted-foreground/40 self-center text-xs">|</span>
         {(Object.keys(modeConfig) as ChatMode[]).filter(m => modeConfig[m].group === "edu").map((m) => {
+          const cfg = modeConfig[m];
+          const Icon = cfg.icon;
+          const isActive = mode === m;
+          return (
+            <button
+              key={m}
+              type="button"
+              onClick={() => { onModeChange(m); setInput(""); }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-body font-semibold tracking-wide transition-all duration-200 ${
+                isActive
+                  ? `bg-muted border border-primary/30 ${cfg.color}`
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="w-3 h-3" />
+              {cfg.label}
+            </button>
+          );
+        })}
+        <span className="text-muted-foreground/40 self-center text-xs">|</span>
+        {(Object.keys(modeConfig) as ChatMode[]).filter(m => modeConfig[m].group === "fun").map((m) => {
           const cfg = modeConfig[m];
           const Icon = cfg.icon;
           const isActive = mode === m;

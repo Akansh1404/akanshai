@@ -9,7 +9,7 @@ export type Message = {
   mode?: ChatMode;
 };
 
-export type ChatMode = "chat" | "research" | "image" | "video" | "math" | "grammar" | "quiz" | "flashcards" | "homework";
+export type ChatMode = "chat" | "research" | "image" | "video" | "math" | "grammar" | "quiz" | "flashcards" | "homework" | "jokes" | "facts" | "story" | "wouldyourather";
 
 export type AppLanguage =
   | "english" | "hindi" | "bengali" | "telugu" | "marathi" | "tamil"

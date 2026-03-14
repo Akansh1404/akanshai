@@ -74,6 +74,12 @@ export function useChat() {
       ["/quiz ", "quiz"],
       ["/flashcards ", "flashcards"],
       ["/homework ", "homework"],
+      ["/jokes ", "jokes"],
+      ["/joke ", "jokes"],
+      ["/facts ", "facts"],
+      ["/fact ", "facts"],
+      ["/story ", "story"],
+      ["/wyr ", "wouldyourather"],
     ];
     for (const [prefix, m] of prefixMap) {
       if (trimmed.toLowerCase().startsWith(prefix)) {
