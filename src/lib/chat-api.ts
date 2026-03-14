@@ -15,6 +15,7 @@ export async function streamChat({
   messages: { role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }[];
   mode?: ChatMode;
   language?: AppLanguage;
+  personality?: Personality;
   onDelta: (text: string) => void;
   onDone: () => void;
 }) {
