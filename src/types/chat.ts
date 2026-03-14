@@ -11,6 +11,17 @@ export type Message = {
 
 export type ChatMode = "chat" | "research" | "image" | "video" | "math" | "grammar" | "quiz" | "flashcards" | "homework" | "jokes" | "facts" | "story" | "wouldyourather";
 
+export type Personality = "default" | "teacher" | "study" | "funny" | "coding" | "gaming";
+
+export const PERSONALITY_LABELS: Record<Personality, { label: string; emoji: string; description: string }> = {
+  default: { label: "Default", emoji: "🤖", description: "Balanced & helpful" },
+  teacher: { label: "Teacher", emoji: "👩‍🏫", description: "Patient & educational" },
+  study: { label: "Study", emoji: "🤓", description: "Focused & structured" },
+  funny: { label: "Funny", emoji: "😆", description: "Humorous & witty" },
+  coding: { label: "Coding", emoji: "🧑‍💻", description: "Technical & precise" },
+  gaming: { label: "Gaming", emoji: "🎮", description: "Casual & fun" },
+};
+
 export type AppLanguage =
   | "english" | "hindi" | "bengali" | "telugu" | "marathi" | "tamil"
   | "gujarati" | "kannada" | "malayalam" | "odia" | "punjabi" | "assamese"
