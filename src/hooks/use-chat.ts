@@ -193,6 +193,7 @@ export function useChat() {
     messages, isLoading, send, clearChat,
     mode, setMode,
     language, setLanguage,
+    personality, setPersonality,
     conversations, loadConversation, startNewChat, deleteConvo,
     activeConvoId,
   };
