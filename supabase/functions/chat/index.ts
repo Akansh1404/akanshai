@@ -110,7 +110,7 @@ serve(async (req) => {
     const { messages, mode, language } = body;
 
     // Validate mode
-    const validModes = new Set(["chat", "research", "math", "grammar", "quiz", "flashcards", "homework"]);
+    const validModes = new Set(["chat", "research", "math", "grammar", "quiz", "flashcards", "homework", "jokes", "facts", "story", "wouldyourather"]);
     const safeMode = validModes.has(mode) ? mode : "chat";
     const safeLang = typeof language === "string" && language.length < 30 ? language : "english";
 
