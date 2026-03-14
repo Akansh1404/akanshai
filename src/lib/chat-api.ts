@@ -8,6 +8,7 @@ export async function streamChat({
   messages,
   mode = "chat",
   language = "english",
+  personality = "default",
   onDelta,
   onDone,
 }: {
