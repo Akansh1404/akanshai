@@ -3,6 +3,7 @@ import { useChat } from "@/hooks/use-chat";
 import { ChatMessage } from "@/components/ChatMessage";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ChatInput } from "@/components/ChatInput";
+import { PersonalitySelector } from "@/components/PersonalitySelector";
 import { ChatSidebar } from "@/components/ChatSidebar";
 import { VideoCallModal } from "@/components/VideoCallModal";
 import { Bot, Sparkles, Menu, X, ImagePlus, Search, Video, MessageSquare, PhoneCall } from "lucide-react";
