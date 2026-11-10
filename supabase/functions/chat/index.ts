@@ -115,7 +115,6 @@ serve(async (req) => {
     const safeLang = typeof language === "string" && language.length < 30 ? language : "english";
     const validPersonalities = new Set(["default", "teacher", "study", "funny", "coding", "gaming"]);
     const safePersonality = validPersonalities.has(personality) ? personality : "default";
-    const safeLang = typeof language === "string" && language.length < 30 ? language : "english";
 
     // Validate messages
     const validationError = validateMessages(messages);
